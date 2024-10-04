@@ -16,20 +16,20 @@ ok: [192.168.91.96] => {
     "check_status_nginx.stdout_lines": [
         "● nginx.service - A high performance web server and a reverse proxy server",
         "     Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; preset: enabled)",
-        "     Active: active (running) since Fri 2024-10-04 06:47:48 UTC; 33min ago",
+        "     Active: active (running) since Fri 2024-10-04 07:29:49 UTC; 4min 25s ago",
         "       Docs: man:nginx(8)",
-        "    Process: 26474 ExecStartPre=/usr/sbin/nginx -t -q -g daemon on; master_process on; (code=exited, status=0/SUCCESS)",
-        "    Process: 26476 ExecStart=/usr/sbin/nginx -g daemon on; master_process on; (code=exited, status=0/SUCCESS)",
-        "   Main PID: 26477 (nginx)",
+        "    Process: 29776 ExecStartPre=/usr/sbin/nginx -t -q -g daemon on; master_process on; (code=exited, status=0/SUCCESS)",
+        "    Process: 29778 ExecStart=/usr/sbin/nginx -g daemon on; master_process on; (code=exited, status=0/SUCCESS)",
+        "   Main PID: 29779 (nginx)",
         "      Tasks: 2 (limit: 2276)",
         "     Memory: 1.7M (peak: 2.0M)",
-        "        CPU: 27ms",
+        "        CPU: 25ms",
         "     CGroup: /system.slice/nginx.service",
-        "             ├─26477 \"nginx: master process /usr/sbin/nginx -g daemon on; master_process on;\"",
-        "             └─26478 \"nginx: worker process\"",
+        "             ├─29779 \"nginx: master process /usr/sbin/nginx -g daemon on; master_process on;\"",
+        "             └─29780 \"nginx: worker process\"",
         "",
-        "Oct 04 06:47:48 dz-16-web systemd[1]: Starting nginx.service - A high performance web server and a reverse proxy server...",
-        "Oct 04 06:47:48 dz-16-web systemd[1]: Started nginx.service - A high performance web server and a reverse proxy server."
+        "Oct 04 07:29:49 dz-16-web systemd[1]: Starting nginx.service - A high performance web server and a reverse proxy server...",
+        "Oct 04 07:29:49 dz-16-web systemd[1]: Started nginx.service - A high performance web server and a reverse proxy server."
     ]
 }
 
@@ -39,10 +39,10 @@ changed: [192.168.91.96]
 TASK [Выхлоп результата] *********************************************************************************************************************************************************************************************************
 ok: [192.168.91.96] => {
     "check_status_port_80.stdout_lines": [
-        "LISTEN 0      511          0.0.0.0:80        0.0.0.0:*    users:((\"nginx\",pid=26478,fd=5),(\"nginx\",pid=26477,fd=5))",
+        "LISTEN 0      511          0.0.0.0:80        0.0.0.0:*    users:((\"nginx\",pid=29780,fd=5),(\"nginx\",pid=29779,fd=5))",
         "LISTEN 0      4096   127.0.0.53%lo:53        0.0.0.0:*    users:((\"systemd-resolve\",pid=8480,fd=15))               ",
         "LISTEN 0      4096      127.0.0.54:53        0.0.0.0:*    users:((\"systemd-resolve\",pid=8480,fd=17))               ",
-        "LISTEN 0      511             [::]:80           [::]:*    users:((\"nginx\",pid=26478,fd=6),(\"nginx\",pid=26477,fd=6))"
+        "LISTEN 0      511             [::]:80           [::]:*    users:((\"nginx\",pid=29780,fd=6),(\"nginx\",pid=29779,fd=6))"
     ]
 }
 
@@ -84,19 +84,19 @@ ok: [192.168.91.95] => {
 }
 
 TASK [Открываем порт 514 (TCP и UDP) путем замены конфига] ***********************************************************************************************************************************************************************
-changed: [192.168.91.95]
+ok: [192.168.91.95]
 
 TASK [Перезапускаем службу rsyslog] **********************************************************************************************************************************************************************************************
 changed: [192.168.91.95]
 
-TASK [Проверим работу nginx на хосте] ********************************************************************************************************************************************************************************************
+TASK [Проверим порты на хосте] ***************************************************************************************************************************************************************************************************
 changed: [192.168.91.95]
 
 TASK [Выхлоп результата] *********************************************************************************************************************************************************************************************************
 ok: [192.168.91.95] => {
     "check_status_port_514.stdout_lines": [
-        "LISTEN 0      25           0.0.0.0:514       0.0.0.0:*    users:((\"rsyslogd\",pid=2517,fd=7))                   ",
-        "LISTEN 0      25              [::]:514          [::]:*    users:((\"rsyslogd\",pid=2517,fd=8))                   "
+        "LISTEN 0      25           0.0.0.0:514       0.0.0.0:*    users:((\"rsyslogd\",pid=4183,fd=7))                   ",
+        "LISTEN 0      25              [::]:514          [::]:*    users:((\"rsyslogd\",pid=4183,fd=8))                   "
     ]
 }
 
@@ -119,7 +119,7 @@ ok: [192.168.91.95]
 TASK [Попробуем зайти по адресу] *************************************************************************************************************************************************************************************************
 changed: [192.168.91.95]
 
-TASK [смотрим информацию об nginx log_access] ************************************************************************************************************************************************************************************
+TASK [смотрим информацию log_access] *********************************************************************************************************************************************************************************************
 changed: [192.168.91.95]
 
 TASK [Выхлоп результата] *********************************************************************************************************************************************************************************************************
@@ -131,7 +131,16 @@ ok: [192.168.91.95] => {
         "2024-10-04T06:47:50+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:06:47:50 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"curl/8.5.0\"",
         "2024-10-04T07:17:15+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:07:17:15 +0000] \"GET / HTTP/1.1\" 403 162 \"-\" \"curl/8.5.0\"",
         "2024-10-04T07:21:10+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:07:21:10 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"curl/8.5.0\"",
-        "2024-10-04T07:21:20+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:07:21:20 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"curl/8.5.0\""
+        "2024-10-04T07:21:20+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:07:21:20 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"curl/8.5.0\"",
+        "2024-10-04T07:21:25+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:07:21:25 +0000] \"GET / HTTP/1.1\" 403 162 \"-\" \"curl/8.5.0\"",
+        "2024-10-04T07:29:04+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:07:29:04 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"curl/8.5.0\"",
+        "2024-10-04T07:29:12+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:07:29:12 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"curl/8.5.0\"",
+        "2024-10-04T07:29:17+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:07:29:17 +0000] \"GET / HTTP/1.1\" 403 162 \"-\" \"curl/8.5.0\"",
+        "2024-10-04T07:29:43+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:07:29:43 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"curl/8.5.0\"",
+        "2024-10-04T07:29:51+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:07:29:51 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"curl/8.5.0\"",
+        "2024-10-04T07:29:56+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:07:29:56 +0000] \"GET / HTTP/1.1\" 403 162 \"-\" \"curl/8.5.0\"",
+        "2024-10-04T07:34:19+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:07:34:19 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"curl/8.5.0\"",
+        "2024-10-04T07:34:27+00:00 dz-16-web nginx_access: 192.168.91.95 - - [04/Oct/2024:07:34:27 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"curl/8.5.0\""
     ]
 }
 
@@ -158,7 +167,10 @@ TASK [Выхлоп результата] ***************************************
 ok: [192.168.91.95] => {
     "check_error_log.stdout_lines": [
         "2024-10-04T07:17:15+00:00 dz-16-web nginx_error: 2024/10/04 07:17:15 [error] 26478#26478: *2 directory index of \"/var/www/html/\" is forbidden, client: 192.168.91.95, server: _, request: \"GET / HTTP/1.1\", host: \"192.168.91.96\"",
-        "2024-10-04T07:21:25+00:00 dz-16-web nginx_error: 2024/10/04 07:21:25 [error] 28002#28002: *2 directory index of \"/var/www/html/\" is forbidden, client: 192.168.91.95, server: _, request: \"GET / HTTP/1.1\", host: \"192.168.91.96\""
+        "2024-10-04T07:21:25+00:00 dz-16-web nginx_error: 2024/10/04 07:21:25 [error] 28002#28002: *2 directory index of \"/var/www/html/\" is forbidden, client: 192.168.91.95, server: _, request: \"GET / HTTP/1.1\", host: \"192.168.91.96\"",
+        "2024-10-04T07:29:17+00:00 dz-16-web nginx_error: 2024/10/04 07:29:17 [error] 28929#28929: *2 directory index of \"/var/www/html/\" is forbidden, client: 192.168.91.95, server: _, request: \"GET / HTTP/1.1\", host: \"192.168.91.96\"",
+        "2024-10-04T07:29:56+00:00 dz-16-web nginx_error: 2024/10/04 07:29:56 [error] 29780#29780: *2 directory index of \"/var/www/html/\" is forbidden, client: 192.168.91.95, server: _, request: \"GET / HTTP/1.1\", host: \"192.168.91.96\"",
+        "2024-10-04T07:34:31+00:00 dz-16-web nginx_error: 2024/10/04 07:34:31 [error] 30700#30700: *2 directory index of \"/var/www/html/\" is forbidden, client: 192.168.91.95, server: _, request: \"GET / HTTP/1.1\", host: \"192.168.91.96\""
     ]
 }
 
@@ -171,5 +183,7 @@ TASK [копируем файл обратно] ********************************
 changed: [192.168.91.96]
 
 PLAY RECAP ***********************************************************************************************************************************************************************************************************************
-192.168.91.95              : ok=15   changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+192.168.91.95              : ok=15   changed=7    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 192.168.91.96              : ok=13   changed=6    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+root@ansible:~/dz-16-rsyslog# 
