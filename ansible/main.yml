@@ -1,0 +1,102 @@
+---
+- hosts: 192.168.91.96
+  gather_facts: true
+  become: true
+  tasks:
+#1. Установка nginx на виртуальной машине web
+  - name: Установка nginx 
+    ansible.builtin.shell: | 
+     apt update && apt install -y nginx
+  - name: Проверим, что nginx работает корректно
+    ansible.builtin.shell: | 
+      systemctl status nginx
+    register: check_status_nginx
+  - name: Выхлоп результата
+    ansible.builtin.debug: 
+      var: check_status_nginx.stdout_lines
+  - name: Проверим порт nginx
+    ansible.builtin.shell: | 
+      ss -ntlp | grep 80
+    register: check_status_port_80  
+  - name: Выхлоп результата
+    ansible.builtin.debug: 
+      var: check_status_port_80.stdout_lines
+- hosts: 192.168.91.95
+  gather_facts: true
+  become: true
+  tasks:
+  - name: Проверим работу nginx на хосте
+    ansible.builtin.shell: | 
+      curl http://192.168.91.96
+    register: check_status_curl 
+  - name: Выхлоп результата
+    ansible.builtin.debug: 
+      var: check_status_curl.stdout_lines
+#  Настройка центрального сервера сбора логов
+  - name: Открываем порт 514 (TCP и UDP) путем замены конфига 
+    ansible.builtin.copy:
+      src: /root/dz-16-rsyslog/rsyslog.conf
+      dest: /etc/rsyslog.conf
+  - name: Перезапускаем службу rsyslog 
+    ansible.builtin.shell: | 
+      systemctl restart rsyslog
+  - name: Проверим работу nginx на хосте
+    ansible.builtin.shell: | 
+      ss -ntlp | grep 514
+    register: check_status_port_514 
+  - name: Выхлоп результата
+    ansible.builtin.debug: 
+      var: check_status_port_514.stdout_lines
+- hosts: 192.168.91.96
+  gather_facts: true
+  become: true
+  tasks:
+  - name: Заменяем конфиг nginx на веб сервере
+    ansible.builtin.copy:
+      src: /root/dz-16-rsyslog/nginx.conf
+      dest: /etc/nginx/nginx.conf
+  - name: Перезапускаем nginx
+    ansible.builtin.shell: | 
+      systemctl restart nginx
+- hosts: 192.168.91.95
+  gather_facts: true
+  become: true
+  tasks:
+  - name: Попробуем зайти по адресу
+    ansible.builtin.shell: | 
+      curl http://192.168.91.96
+  - name: смотрим информацию об nginx log_access
+    ansible.builtin.shell: | 
+      cat /var/log/rsyslog/dz-16-web/nginx_access.log
+    register: check_access_log 
+  - name: Выхлоп результата  
+    ansible.builtin.debug: 
+      var: check_access_log.stdout_lines
+- hosts: 192.168.91.96
+  gather_facts: true
+  become: true
+  tasks:
+  - name: копируем файл для получения ошибки в дальнейшем
+    ansible.builtin.shell: |
+      mv /var/www/html/index.nginx-debian.html /var/www/ 
+- hosts: 192.168.91.95
+  gather_facts: true
+  become: true
+  tasks:
+  - name: Попробуем зайти по адресу
+    ansible.builtin.shell: | 
+      curl http://192.168.91.96
+  - name: смотрим информацию об nginx log_error
+    ansible.builtin.shell: | 
+      cat /var/log/rsyslog/dz-16-web/nginx_error.log
+    register: check_error_log 
+  - name: Выхлоп результата  
+    ansible.builtin.debug: 
+      var: check_error_log.stdout_lines
+- hosts: 192.168.91.96
+  gather_facts: true
+  become: true
+  tasks:
+  - name: копируем файл обратно
+    ansible.builtin.shell: |
+      mv /var/www/index.nginx-debian.html /var/www/html/
